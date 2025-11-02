@@ -1,0 +1,7 @@
+colorama
+requests
+pyfiglet
+rich
+psutil
+socket
+datetime
