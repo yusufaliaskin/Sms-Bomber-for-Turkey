@@ -40,6 +40,7 @@ Enough Reborn is a powerful SMS bombing tool with a modern, feature-rich interfa
   - Food Delivery: Yemeksepeti, Dominos, KöfteciYusuf
   - Retail: BIM, Koton, English Home, WMF
   - And many more...
+<img width="334" height="389" alt="image" src="https://github.com/user-attachments/assets/447583b3-8e02-4a24-865a-4757a48fdc7e" />
 
 ## 🚀 Installation
 
