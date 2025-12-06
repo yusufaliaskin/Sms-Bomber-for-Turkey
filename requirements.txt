@@ -1,7 +1,10 @@
-colorama
-requests
-pyfiglet
-rich
-psutil
-socket
-datetime
+# Core Dependencies
+requests>=2.31.0    # HTTP requests for SMS API calls
+colorama>=0.4.6     # Cross-platform colored terminal text
+rich>=13.7.0        # Advanced terminal UI (tables, progress bars)
+pyfiglet>=1.0.2     # ASCII art text generation
+psutil>=5.9.8       # System monitoring (CPU/RAM usage)
+
+# Bot Dependencies (Optional - Uncomment to use)
+# discord.py>=2.3.2           # For Discord bot integration
+# python-telegram-bot>=20.7   # For Telegram bot integration

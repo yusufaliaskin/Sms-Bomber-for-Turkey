@@ -1,5 +1,15 @@
-colorama==0.3.9
-requests==2.26.0
-beautifulsoup4==4.10.0
-discord.py==2.1.0
-python_telegram_bot==20.0
+# SMS Bomber - Bot Dependencies
+# Compatible with Python 3.7+
+
+# Core dependencies (also needed for bots)
+colorama>=0.4.6
+requests>=2.31.0
+
+# Discord Bot Support
+discord.py>=2.3.2
+
+# Telegram Bot Support
+python-telegram-bot>=20.7
+
+# Optional: Web Scraping (if needed)
+beautifulsoup4>=4.12.3

@@ -40,7 +40,6 @@ Enough Reborn is a powerful SMS bombing tool with a modern, feature-rich interfa
   - Food Delivery: Yemeksepeti, Dominos, KöfteciYusuf
   - Retail: BIM, Koton, English Home, WMF
   - And many more...
-<img width="334" height="389" alt="image" src="https://github.com/user-attachments/assets/447583b3-8e02-4a24-865a-4757a48fdc7e" />
 
 ## 🚀 Installation
 
@@ -243,18 +242,22 @@ Configuration is done via `/config` command.
 
 ## 📦 Requirements
 
-### Core Dependencies
+The project relies on the following Python libraries to function correctly:
 
-- `colorama>=0.4.6` - Terminal colors and styling
-- `requests>=2.31.0` - HTTP requests
-- `pyfiglet>=1.0.2` - ASCII art text
-- `rich>=13.7.0` - Rich terminal formatting
-- `psutil>=5.9.8` - System monitoring
+### Core Libraries
+| Library | Purpose |
+|---------|---------|
+| **requests** | Used to make HTTP POST requests to various SMS service providers (APIs) to send verification codes. |
+| **rich** | Powers the modern, aesthetic terminal user interface, including the dashboard, tables, and progress bars. |
+| **colorama** | Ensures that terminal colors (ANSI escape sequences) render correctly across different operating systems, especially Windows. |
+| **pyfiglet** | Generates the stylish ASCII art logo displayed at the application startup. |
+| **psutil** | Fetches real-time system statistics (CPU and RAM usage) for the live dashboard monitoring. |
 
-### Bot Dependencies
-
-- `discord.py>=2.3.2` - Discord bot framework
-- `python-telegram-bot>=20.7` - Telegram bot framework
+### Bot Libraries (Optional)
+| Library | Purpose |
+|---------|---------|
+| **discord.py** | Required only if you intend to use the Discord bot integration. |
+| **python-telegram-bot** | Required only if you intend to use the Telegram bot integration. |
 
 ## 🤝 Contributing
 

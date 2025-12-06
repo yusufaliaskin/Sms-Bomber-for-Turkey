@@ -1,10 +1,13 @@
-from colorama import Fore, Style
+from colorama import Fore, Style, init
 from time import sleep
 from os import system
 from sms import SendSms
 import threading
 import sys
 import subprocess
+
+# Initialize colorama for Windows compatibility
+init(autoreset=True)
 
 # Gerekli kütüphaneleri kontrol et ve eksik olanları yükle - Optimize edilmiş
 def check_and_install_libraries():
@@ -18,12 +21,12 @@ def check_and_install_libraries():
             missing_libraries.append(lib)
     
     if missing_libraries:
-        print(f"{Fore.YELLOW}Eksik kütüphaneler tespit edildi. Yükleniyor...{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}Eksik kütüphaneler tespit edildi. Yükleniyor...")
         for lib in missing_libraries:
             print(f"Yükleniyor: {lib}")
             # Daha hızlı yükleme için quiet modunu kullan
             subprocess.check_call([sys.executable, "-m", "pip", "install", lib, "-q"])
-        print(f"{Fore.GREEN}Tüm kütüphaneler başarıyla yüklendi!{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}Tüm kütüphaneler başarıyla yüklendi!")
         # Gereksiz gecikmeyi azalt
         sleep(0.5)
 
@@ -69,10 +72,16 @@ theme = {
 # İnternet bağlantısını kontrol et
 def check_internet_connection():
     try:
-        requests.get("https://google.com", timeout=3)
+        # Google HTTP check (faster and less SSL issues for connectivity check)
+        requests.get("http://www.google.com", timeout=5)
         return True
     except:
-        return False
+        try:
+            # Fallback to Cloudflare (reliable alternative)
+            requests.get("http://1.1.1.1", timeout=5)
+            return True
+        except:
+            return False
 
 # Açılış animasyonu göster - Optimize edilmiş
 def show_startup_animation():
@@ -325,18 +334,24 @@ def show_services():
     alisveris_servisler = ["Trendyol", "Hepsiburada", "Englishhome", "Bim"]
     diger_servisler = [s for s in servisler_sms if s not in populer_servisler and s not in yemek_servisler and s not in alisveris_servisler]
     
-    # Ana tablo
+    # Ana tablo - Grid düzeni ile daha organize
     service_table = Table(
         title="",
         box=box.ROUNDED,
         border_style="purple",
-        padding=(1, 1),
+        padding=(0, 1),
         highlight=True,
-        width=80
+        show_header=True,
+        header_style="bold magenta"
     )
     
-    service_table.add_column("Kategori", style="bold cyan", width=20)
-    service_table.add_column("Servisler", style="bold white")
+    # 4 kolonlu grid düzeni için kolonlar
+    service_table.add_column("#", style="bold cyan", width=4, justify="center")
+    service_table.add_column("Servis Adı", style="bold white", width=22)
+    service_table.add_column("#", style="bold cyan", width=4, justify="center")
+    service_table.add_column("Servis Adı", style="bold white", width=22)
+    service_table.add_column("#", style="bold cyan", width=4, justify="center")
+    service_table.add_column("Servis Adı", style="bold white", width=22)
     
     # Servisleri kontrol etme animasyonu
     with Progress(
@@ -351,53 +366,38 @@ def show_services():
             sleep(0.01)  # Daha kısa bekleme süresi ile hızlandırılmış animasyon
             progress.update(task, advance=1)
     
-    # Popüler servisler
-    populer_text = ""
-    for service in populer_servisler:
-        if service in servisler_sms:
-            populer_text += f"[bold green]✓[/] [bold white]{service}[/]   "
+    # Tüm servisleri alfabetik sıraya koy ve 3'lü gruplara böl
+    sorted_services = sorted(servisler_sms)
     
-    # Yemek servisleri
-    yemek_text = ""
-    for service in yemek_servisler:
-        if service in servisler_sms:
-            yemek_text += f"[bold green]✓[/] [bold white]{service}[/]   "
-    
-    # Alışveriş servisleri
-    alisveris_text = ""
-    for service in alisveris_servisler:
-        if service in servisler_sms:
-            alisveris_text += f"[bold green]✓[/] [bold white]{service}[/]   "
-    
-    # Diğer servisler
-    diger_text = ""
-    for service in diger_servisler:
-        if service in servisler_sms:
-            diger_text += f"[bold green]✓[/] [bold white]{service}[/]   "
-    
-    # Tabloyu doldurma
-    service_table.add_row("[bold cyan]Popüler Servisler[/]", populer_text)
-    service_table.add_row("[bold cyan]Yemek Servisleri[/]", yemek_text)
-    service_table.add_row("[bold cyan]Alışveriş Servisleri[/]", alisveris_text)
-    service_table.add_row("[bold cyan]Diğer Servisler[/]", diger_text)
+    # Servisleri 3'lü kolonlara yerleştir
+    for i in range(0, len(sorted_services), 3):
+        col1_num = f"[bold green]{i+1}[/]"
+        col1_name = f"[bold green]✓[/] {sorted_services[i]}"
+        
+        col2_num = f"[bold green]{i+2}[/]" if i+1 < len(sorted_services) else ""
+        col2_name = f"[bold green]✓[/] {sorted_services[i+1]}" if i+1 < len(sorted_services) else ""
+        
+        col3_num = f"[bold green]{i+3}[/]" if i+2 < len(sorted_services) else ""
+        col3_name = f"[bold green]✓[/] {sorted_services[i+2]}" if i+2 < len(sorted_services) else ""
+        
+        service_table.add_row(col1_num, col1_name, col2_num, col2_name, col3_num, col3_name)
     
     # Toplam servis sayısı - Daha düzenli özet paneli
     summary = Panel(
-        f"[bold cyan]Toplam: [bold white]{len(servisler_sms)}[/] Aktif Servis[/]",
+        f"[bold cyan]Toplam: [bold white]{len(servisler_sms)}[/] Aktif Servis | [bold magenta]Alfabetik Sırada Gösteriliyor[/][/]",
         border_style="cyan",
         box=box.ROUNDED,
-        padding=(1, 2),
-        width=80
+        padding=(1, 2)
     )
     
     # Animasyonlu geçiş efekti - Daha kısa bekleme süresi
     with console.status("[bold green]Servis listesi yükleniyor...", spinner="dots"):
         sleep(0.2)  # Daha kısa animasyon için bekleme
     
-    # Panelleri yazdır - Ortalanmış görünüm
-    console.print(Align.center(service_title))
-    console.print(Align.center(service_table))
-    console.print(Align.center(summary))
+    # Panelleri yazdır - Sola hizalanmış görünüm
+    console.print(Align.left(service_title))
+    console.print(Align.left(service_table))
+    console.print(Align.left(summary))
     
     # Geri dönüş butonu - Daha kompakt buton
     back_panel = Panel(
@@ -407,7 +407,7 @@ def show_services():
         padding=(0, 1),  # Padding'i azalt
         width=40  # Genişliği sınırla
     )
-    console.print(Align.center(back_panel))
+    console.print(Align.left(back_panel))
     input()
 
 # Çıkış animasyonu - Daha kompakt ve estetik tasarım
@@ -443,8 +443,7 @@ def show_exit_animation():
         TextColumn(f"[bold {theme['error']}]{{task.description}}"),
         BarColumn(complete_style=theme["error"], finished_style=theme["error"]),
         TextColumn(f"[bold {theme['primary']}]{{task.percentage:.0f}}%"),
-        expand=False,  # Genişlemeyi engelle
-        width=60      # Sabit genişlik
+        expand=False  # Genişlemeyi engelle
     ) as progress:
         task = progress.add_task(messages[0], total=100)
         
@@ -472,11 +471,11 @@ def show_exit_animation():
         system("cls||clear")
         color = theme["primary"] if i % 2 == 0 else theme["secondary"]
         # Ortalanmış ve sınırlı genişlikte görünüm
-        console.print(Align.center(Panel(f"[{color}]{goodbye}[/]", width=60, padding=(0, 1), border=False)))
+        console.print(Align.center(Panel(f"[{color}]{goodbye}[/]", padding=(0, 1))))
         sleep(0.05)  # Gecikmeyi daha da azalt
     
     # Son mesaj - Daha kısa bekleme ve kompakt görünüm
-    console.print(Align.center(Panel(f"[bold {theme['success']}]✔ İyi günler dileriz![/]", width=60, padding=(0, 1), border=False)))
+    console.print(Align.center(Panel(f"[bold {theme['success']}]✔ İyi günler dileriz![/]", padding=(0, 1))))
     sleep(0.3)  # Gecikmeyi azalt
 
 # Ana program döngüsü
@@ -509,12 +508,13 @@ def main():
             header = Panel(
                 Align.center(
                     Text("📱 NORMAL SMS GÖNDERME", style=f"bold {theme['primary']}"),
-                    vertical="middle"
+                    vertical="top"
                 ),
                 border_style=theme["primary"],
-                box=box.ROUNDED
+                box=box.ROUNDED,
+                width=60
             )
-            console.print(header)
+            console.print(Align.left(header))
             
             # Telefon numarası al - Daha verimli panel oluşturma
             tel_panel = Panel.fit(f"[bold {theme['warning']}]Telefon numarasını başında '+90' olmadan yazınız\n(Birden çoksa 'enter' tuşuna basınız)[/]", border_style=theme["secondary"])
@@ -719,9 +719,11 @@ def main():
             )
             console.print(sending_panel)
             
+            # Gönderilen SMS sayısını takip et
+            gonderilen = 0
+            
             if kere is None: 
                 sms = SendSms(tel_no, mail)
-                gonderilen = 0
                 
                 try:
                     with Progress(
@@ -752,7 +754,6 @@ def main():
             for i in tel_liste:
                 sms = SendSms(i, mail)
                 if isinstance(kere, int):
-                    gonderilen = 0
                     
                     with Progress(
                         SpinnerColumn(style=theme["accent"]),
@@ -817,9 +818,10 @@ def main():
                     vertical="middle"
                 ),
                 border_style=theme["primary"],
-                box=box.ROUNDED
+                box=box.ROUNDED,
+                width=60
             )
-            console.print(header)
+            console.print(Align.left(header))
             
             # Dosya seçim paneli - Sola hizalanmış standart tasarım
             file_panel = Panel(
@@ -830,9 +832,10 @@ def main():
                 title=f"[{theme['secondary']}]Dosya Seçimi[/]",
                 border_style=theme["secondary"],
                 box=box.ROUNDED,
-                title_align="left"
+                title_align="left",
+                width=60
             )
-            console.print(file_panel)
+            console.print(Align.left(file_panel))
             
             # Dosya yolu girişi - Daha hızlı prompt
             file_path = Prompt.ask(
@@ -863,9 +866,10 @@ def main():
                     title=f"[{theme['secondary']}]Gönderim Ayarları[/]",
                     border_style=theme["secondary"],
                     box=box.ROUNDED,
-                    title_align="left"
+                    title_align="left",
+                    width=60
                 )
-                console.print(params_panel)
+                console.print(Align.left(params_panel))
                 
                 # Mail sayısı girişi - Daha hızlı prompt
                 mail_count = int(Prompt.ask(
@@ -890,9 +894,10 @@ def main():
                     title=f"[{theme['secondary']}]Performans Ayarı[/]",
                     border_style=theme["secondary"],
                     box=box.ROUNDED,
-                    title_align="left"
+                    title_align="left",
+                    width=60
                 )
-                console.print(thread_panel)
+                console.print(Align.left(thread_panel))
                 
                 thread_count = min(200, max(1, int(Prompt.ask(
                     f"[{theme['secondary']}]Thread sayısını girin (1-200)[/]", 
@@ -912,9 +917,10 @@ def main():
                     title=f"[{theme['secondary']}]Onay[/]",
                     border_style=theme["secondary"],
                     box=box.ROUNDED,
-                    title_align="left"
+                    title_align="left",
+                    width=60
                 )
-                console.print(confirm_panel)
+                console.print(Align.left(confirm_panel))
                 
                 # Onay alma - Daha hızlı prompt
                 confirm = Prompt.ask(
@@ -933,11 +939,12 @@ def main():
                     Align.left(
                         Text("🚀 TURBO SMS GÖNDERİLİYOR", style=f"bold {theme['primary']}"),
                         vertical="middle"
-                    ),
-                    border_style=theme["primary"],
-                    box=box.ROUNDED
-                )
-                console.print(sending_panel)
+                ),
+                border_style=theme["primary"],
+                box=box.ROUNDED,
+                width=60
+            )
+                console.print(Align.left(sending_panel))
                 
                 # Thread'leri başlat - Optimize edilmiş değişkenler
                 threads = []
@@ -1116,17 +1123,19 @@ def main():
                     """,
                     title=f"[{theme['success']}]Başarılı[/]",
                     border_style=theme["success"],
-                    box=box.ROUNDED
+                    box=box.ROUNDED,
+                    width=60
                 )
-                console.print(result_panel)
+                console.print(Align.left(result_panel))
                 
                 # Geri dönüş butonu - Tek seferde render
                 back_panel = Panel(
                     "Ana menüye dönmek için ENTER tuşuna basın",
                     border_style=theme["secondary"],
-                    box=box.ROUNDED
+                    box=box.ROUNDED,
+                    width=60
                 )
-                console.print(back_panel)
+                console.print(Align.left(back_panel))
                 input()
             
             except FileNotFoundError:
@@ -1160,5 +1169,8 @@ def main():
             break
 
 if __name__ == "__main__":
-    # Programı başlat
-    main()
+    try:
+        # Programı başlat
+        main()
+    except KeyboardInterrupt:
+        show_exit_animation()

